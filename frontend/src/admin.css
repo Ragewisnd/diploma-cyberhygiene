@@ -1,0 +1,142 @@
+/* ─── Admin KPI Grid ─────────────────────────────────────────────────────── */
+
+.admin-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 14px;
+  margin-bottom: 28px;
+}
+
+.admin-kpi-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.admin-kpi-card span {
+  font-size: 13px;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.admin-kpi-card strong {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1;
+}
+
+/* ─── Admin Tabs ───────────────────────────────────────────────────────────── */
+
+.admin-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 22px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 2px;
+}
+
+.admin-tab {
+  background: none;
+  border: none;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 8px 16px;
+  border-radius: 8px 8px 0 0;
+  transition: color 0.15s, background 0.15s;
+}
+
+.admin-tab:hover {
+  color: var(--text);
+  background: var(--surface-hover);
+}
+
+.admin-tab.active {
+  color: var(--accent);
+  border-bottom: 2px solid var(--accent);
+  font-weight: 600;
+}
+
+/* ─── Admin Form Card ─────────────────────────────────────────────────────── */
+
+.admin-form-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px;
+  margin-bottom: 22px;
+}
+
+.admin-form-card h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 18px;
+  color: var(--text);
+}
+
+.admin-block-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 12px;
+}
+
+.admin-blocks-section {
+  margin-top: 18px;
+}
+
+.admin-textarea {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 14px;
+  color: var(--text);
+  resize: vertical;
+  font-family: inherit;
+  box-sizing: border-box;
+  transition: border-color 0.15s;
+}
+
+.admin-textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.admin-select {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 14px;
+  color: var(--text);
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.admin-select:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+/* ─── Analytics panel ───────────────────────────────────────────────────── */
+
+.admin-analytics-panel {
+  padding-top: 6px;
+}
+
+/* ─── Danger color ─────────────────────────────────────────────────────────── */
+
+:root {
+  --danger: #e05252;
+  --surface-hover: rgba(255,255,255,0.04);
+}
