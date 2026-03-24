@@ -1,32 +1,40 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { login, getCurrentUser } from "../api";
+import { register, login, getCurrentUser } from "../api";
 import PageTransition from "../components/PageTransition";
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [form, setForm] = useState({ full_name: "", email: "", password: "", confirm: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  function set(field) {
+    return (e) => setForm((f) => ({ ...f, [field]: e.target.value }));
+  }
+
   async function handleSubmit(e) {
     e.preventDefault();
-    if (!email || !password) {
-      setError("Введите email и пароль");
+    if (!form.full_name || !form.email || !form.password) {
+      setError("Заполните все поля");
+      return;
+    }
+    if (form.password !== form.confirm) {
+      setError("Пароли не совпадают");
+      return;
+    }
+    if (form.password.length < 6) {
+      setError("Пароль должен быть не менее 6 символов");
       return;
     }
     setLoading(true);
     setError("");
     try {
-      await login(email, password);
+      await register(form.full_name, form.email, form.password);
+      await login(form.email, form.password);
       const user = await getCurrentUser();
-      if (user.role === "admin") {
-        navigate("/admin", { replace: true });
-      } else {
-        navigate("/dashboard", { replace: true });
-      }
+      navigate(user.role === "admin" ? "/admin" : "/dashboard", { replace: true });
     } catch (err) {
       setError(err.message);
     } finally {
@@ -61,31 +69,50 @@ export default function LoginPage() {
         </div>
 
         <div className="login-card">
-          <h2>Войти в кабинет</h2>
-          <p className="muted">Введите данные вашей учетной записи</p>
+          <h2>Создать аккаунт</h2>
+          <p className="muted">Заполните данные для регистрации</p>
 
           {error && <div className="error-box">{error}</div>}
 
           <form className="form-stack" onSubmit={handleSubmit}>
             <label>
+              <span>Полное имя</span>
+              <input
+                type="text"
+                placeholder="Иван Иванов"
+                value={form.full_name}
+                onChange={set("full_name")}
+                autoComplete="name"
+              />
+            </label>
+            <label>
               <span>Email</span>
               <input
                 type="email"
                 placeholder="you@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={form.email}
+                onChange={set("email")}
                 autoComplete="email"
               />
             </label>
-
             <label>
               <span>Пароль</span>
               <input
                 type="password"
+                placeholder="Не менее 6 символов"
+                value={form.password}
+                onChange={set("password")}
+                autoComplete="new-password"
+              />
+            </label>
+            <label>
+              <span>Повторите пароль</span>
+              <input
+                type="password"
                 placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                autoComplete="current-password"
+                value={form.confirm}
+                onChange={set("confirm")}
+                autoComplete="new-password"
               />
             </label>
 
@@ -96,14 +123,14 @@ export default function LoginPage() {
               whileHover={{ y: -1 }}
               whileTap={{ scale: 0.985 }}
             >
-              {loading ? "Входим..." : "Войти"}
+              {loading ? "Регистрирую..." : "Создать аккаунт"}
             </motion.button>
           </form>
 
           <p style={{ marginTop: 18, textAlign: "center" }} className="muted">
-            Ещё нет аккаунта?{" "}
-            <Link to="/register" style={{ color: "var(--primary-dark)", fontWeight: 600 }}>
-              Зарегистрироваться
+            Уже есть аккаунт?{" "}
+            <Link to="/login" style={{ color: "var(--primary-dark)", fontWeight: 600 }}>
+              Войти
             </Link>
           </p>
         </div>

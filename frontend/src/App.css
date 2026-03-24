@@ -185,7 +185,7 @@ p {
   margin-bottom: 18px;
 }
 
-/* login */
+/* login / register */
 
 .login-shell {
   display: grid;
@@ -223,16 +223,19 @@ p {
 }
 
 .login-showcase h1 {
-  font-size: clamp(38px, 5vw, 72px);
-  max-width: 760px;
-  line-height: 1.03;
+  font-size: clamp(32px, 4vw, 62px);
+  line-height: 1.06;
   letter-spacing: -0.04em;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  max-width: 100%;
 }
 
 .login-showcase p {
-  max-width: 620px;
+  max-width: 100%;
   color: var(--muted);
-  font-size: 18px;
+  font-size: 17px;
   line-height: 1.7;
 }
 

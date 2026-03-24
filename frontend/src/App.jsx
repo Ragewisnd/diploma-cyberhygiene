@@ -2,6 +2,7 @@ import { AnimatePresence } from "framer-motion";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import RoleRoute from "./components/RoleRoute";
 import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
 import DashboardPage from "./pages/DashboardPage";
 import CoursePage from "./pages/CoursePage";
 import TestPage from "./pages/TestPage";
@@ -36,6 +37,7 @@ export default function App() {
         />
 
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
 
         <Route
           path="/dashboard"
