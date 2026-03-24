@@ -1,205 +1,105 @@
-import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import PageTransition from "../../components/PageTransition";
-import {
-  adminGetCourses,
-  adminCreateCourse,
-  adminDeleteCourse,
-  adminUpdateCourse,
-} from "../../api";
+import AdminLayout from "../../components/AdminLayout";
+import { getAdminCourses, createAdminCourse, deleteAdminCourse, updateAdminCourse } from "../../api";
+import { Link } from "react-router-dom";
 
 export default function AdminCoursesPage() {
-  const navigate = useNavigate();
   const [courses, setCourses] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [form, setForm] = useState({ title: "", description: "", category: "" });
+  const [loading, setLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState({ title: "", description: "", category: "general", is_published: false });
-  const [saving, setSaving] = useState(false);
 
-  async function loadCourses() {
-    try {
-      const data = await adminGetCourses();
-      setCourses(data);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
+  useEffect(() => { load(); }, []);
+
+  async function load() {
+    try { setCourses(await getAdminCourses()); } catch {}
   }
-
-  useEffect(() => { loadCourses(); }, []);
 
   async function handleCreate(e) {
     e.preventDefault();
-    setSaving(true);
+    if (!form.title) return;
+    setLoading(true);
     try {
-      await adminCreateCourse(form);
-      setForm({ title: "", description: "", category: "general", is_published: false });
+      await createAdminCourse(form);
+      setForm({ title: "", description: "", category: "" });
       setShowForm(false);
-      await loadCourses();
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setSaving(false);
-    }
+      await load();
+    } catch {}
+    setLoading(false);
   }
 
-  async function handleDelete(courseId) {
-    if (!window.confirm("Удалить курс и все его данные?")) return;
+  async function handleToggle(c) {
     try {
-      await adminDeleteCourse(courseId);
-      await loadCourses();
-    } catch (err) {
-      setError(err.message);
-    }
+      await updateAdminCourse(c._id, { is_published: !c.is_published });
+      await load();
+    } catch {}
   }
 
-  async function handleTogglePublish(course) {
-    try {
-      await adminUpdateCourse(course._id, { is_published: !course.is_published });
-      await loadCourses();
-    } catch (err) {
-      setError(err.message);
-    }
+  async function handleDelete(id) {
+    if (!confirm("Удалить курс?")) return;
+    try { await deleteAdminCourse(id); await load(); } catch {}
   }
 
   return (
-    <PageTransition className="page-shell">
-      <header className="app-header">
-        <div>
-          <p className="app-header-label">Администратор</p>
-          <h1>Управление курсами</h1>
-        </div>
-        <div style={{ display: "flex", gap: 12 }}>
-          <motion.button
-            className="ghost-btn"
-            whileHover={{ y: -1 }}
-            onClick={() => navigate("/admin")}
-          >
-            ← Назад
-          </motion.button>
-          <motion.button
-            className="primary-btn"
-            whileHover={{ y: -1 }}
-            onClick={() => setShowForm((v) => !v)}
-          >
-            {showForm ? "Отмена" : "+ Новый курс"}
-          </motion.button>
-        </div>
-      </header>
-
-      {error && <div className="error-box">{error}</div>}
+    <AdminLayout title="Курсы" subtitle="УПРАВЛЕНИЕ">
+      <div className="ad-toolbar">
+        <button className="primary-btn" onClick={() => setShowForm((v) => !v)}>
+          {showForm ? "× Отмена" : "+ Новый курс"}
+        </button>
+      </div>
 
       {showForm && (
-        <motion.form
-          className="admin-form-card"
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          onSubmit={handleCreate}
-        >
+        <form className="ad-form-card" onSubmit={handleCreate}>
           <h3>Новый курс</h3>
-          <div className="form-stack">
-            <label>
-              <span>Название</span>
-              <input
-                value={form.title}
-                onChange={(e) => setForm({ ...form, title: e.target.value })}
-                placeholder="Основы кибергигиены"
-                required
-              />
+          <div className="ad-form-grid">
+            <label className="ad-label">
+              Название
+              <input value={form.title} onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))} placeholder="Основы кибергигиены" />
             </label>
-            <label>
-              <span>Описание</span>
-              <input
-                value={form.description}
-                onChange={(e) => setForm({ ...form, description: e.target.value })}
-                placeholder="Краткое описание курса"
-                required
-              />
+            <label className="ad-label">
+              Категория
+              <input value={form.category} onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))} placeholder="например, Пароли" />
             </label>
-            <label>
-              <span>Категория</span>
-              <input
-                value={form.category}
-                onChange={(e) => setForm({ ...form, category: e.target.value })}
-                placeholder="general"
-              />
-            </label>
-            <label style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
-              <input
-                type="checkbox"
-                checked={form.is_published}
-                onChange={(e) => setForm({ ...form, is_published: e.target.checked })}
-              />
-              <span>Опубликовать сразу</span>
-            </label>
-            <motion.button
-              className="primary-btn"
-              type="submit"
-              disabled={saving}
-              whileHover={{ y: -1 }}
-            >
-              {saving ? "Создаю..." : "Создать курс"}
-            </motion.button>
           </div>
-        </motion.form>
+          <label className="ad-label" style={{ marginTop: 14 }}>
+            Описание
+            <textarea className="ad-textarea" rows={3} value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} placeholder="Краткое описание курса" />
+          </label>
+          <div style={{ marginTop: 18, display: "flex", gap: 10 }}>
+            <button className="primary-btn" type="submit" disabled={loading}>
+              {loading ? "Создание..." : "Создать"}
+            </button>
+            <button className="ghost-btn" type="button" onClick={() => setShowForm(false)}>Отмена</button>
+          </div>
+        </form>
       )}
 
-      {loading && <div className="loading-card">Загружаю курсы...</div>}
-
-      <div className="course-list">
-        {courses.map((course, index) => (
-          <motion.article
-            key={course._id}
-            className="course-row"
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.05 }}
-            whileHover={{ y: -2 }}
-          >
-            <div className="course-row-main">
-              <div className="course-row-head">
-                <div>
-                  <h3>{course.title}</h3>
-                  <p className="muted">{course.description}</p>
-                </div>
-                <div className="course-row-meta">
-                  <span className={`status-pill ${course.is_published ? "done" : ""}`}>
-                    {course.is_published ? "Опубликован" : "Черновик"}
-                  </span>
-                  <span className="muted" style={{ fontSize: 13 }}>{course.category}</span>
-                </div>
-              </div>
+      <div className="ad-course-list">
+        {courses.map((c) => (
+          <div className="ad-course-row" key={c._id}>
+            <div className="ad-course-info">
+              <div className="ad-course-title">{c.title}</div>
+              <div className="ad-course-desc">{c.description || "Описание не добавлено"}</div>
+              {c.category && <span className="ad-badge ad-badge--blue">{c.category}</span>}
             </div>
-            <div className="course-row-side">
-              <motion.button
-                className="ghost-btn"
-                whileHover={{ y: -1 }}
-                onClick={() => handleTogglePublish(course)}
+            <div className="ad-course-actions">
+              <span
+                className={`ad-badge ${c.is_published ? "ad-badge--green" : "ad-badge--orange"}`}
+                style={{ cursor: "pointer" }}
+                onClick={() => handleToggle(c)}
+                title="Нажмите чтобы сменить статус"
               >
-                {course.is_published ? "Снять" : "Опубликовать"}
-              </motion.button>
-              <motion.button
-                className="ghost-btn"
-                whileHover={{ y: -1 }}
-                onClick={() => navigate(`/admin/courses/${course._id}`)}
-              >
+                {c.is_published ? "Опубликован" : "Черновик"}
+              </span>
+              <Link to={`/admin/courses/${c._id}`} className="ghost-btn" style={{ fontSize: 13, padding: "8px 14px" }}>
                 Редактировать
-              </motion.button>
-              <motion.button
-                className="ghost-btn"
-                style={{ color: "var(--danger)" }}
-                whileHover={{ y: -1 }}
-                onClick={() => handleDelete(course._id)}
-              >
-                Удалить
-              </motion.button>
+              </Link>
+              <button className="ad-btn-danger" onClick={() => handleDelete(c._id)}>Удалить</button>
             </div>
-          </motion.article>
+          </div>
         ))}
+        {courses.length === 0 && <div className="ad-empty">Курсов пока нет. Создайте первый!</div>}
       </div>
-    </PageTransition>
+    </AdminLayout>
   );
 }

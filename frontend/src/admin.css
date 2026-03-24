@@ -1,142 +1,497 @@
-/* ─── Admin KPI Grid ─────────────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════
+   Admin Layout
+═══════════════════════════════════════════════════ */
 
-.admin-kpi-grid {
+.al-root {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 14px;
-  margin-bottom: 28px;
+  grid-template-columns: 240px 1fr;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(169,199,245,0.18), transparent 30%),
+    radial-gradient(circle at bottom right, rgba(122,143,232,0.10), transparent 30%),
+    linear-gradient(180deg, #f8f6f2 0%, #f3f1eb 100%);
 }
 
-.admin-kpi-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 18px 20px;
+/* ── Sidebar ─────────────────────────────────────── */
+
+.al-sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
   display: flex;
   flex-direction: column;
+  padding: 28px 18px;
+  background: rgba(255,252,248,0.78);
+  backdrop-filter: blur(22px);
+  border-right: 1px solid rgba(221,229,241,0.7);
+  box-shadow: 4px 0 24px rgba(79,101,146,0.06);
   gap: 8px;
 }
 
-.admin-kpi-card span {
-  font-size: 13px;
-  color: var(--muted);
-  font-weight: 500;
+.al-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 28px;
+  padding: 0 6px;
 }
 
-.admin-kpi-card strong {
-  font-size: 26px;
+.al-brand-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: #fff;
+  font-size: 18px;
+  flex-shrink: 0;
+  box-shadow: 0 6px 16px rgba(101,123,218,0.28);
+}
+
+.al-brand-name {
+  font-size: 15px;
   font-weight: 700;
   color: var(--text);
-  line-height: 1;
+  line-height: 1.2;
 }
 
-/* ─── Admin Tabs ───────────────────────────────────────────────────────────── */
+.al-brand-role {
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
 
-.admin-tabs {
+.al-nav {
   display: flex;
-  gap: 6px;
-  margin-bottom: 22px;
-  border-bottom: 1px solid var(--border);
-  padding-bottom: 2px;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
 }
 
-.admin-tab {
-  background: none;
-  border: none;
+.al-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 14px;
+  border-radius: 14px;
   font-size: 14px;
   font-weight: 500;
   color: var(--muted);
-  cursor: pointer;
-  padding: 8px 16px;
-  border-radius: 8px 8px 0 0;
-  transition: color 0.15s, background 0.15s;
+  text-decoration: none;
+  transition: background 0.18s, color 0.18s;
 }
 
-.admin-tab:hover {
+.al-nav-item:hover {
+  background: rgba(122,143,232,0.08);
   color: var(--text);
-  background: var(--surface-hover);
 }
 
-.admin-tab.active {
-  color: var(--accent);
-  border-bottom: 2px solid var(--accent);
-  font-weight: 600;
+.al-nav-item--active {
+  background: linear-gradient(135deg, rgba(122,143,232,0.14), rgba(169,199,245,0.10));
+  color: var(--primary-dark);
+  font-weight: 700;
+  border: 1px solid rgba(122,143,232,0.22);
+  box-shadow: 0 4px 14px rgba(101,123,218,0.10);
 }
 
-/* ─── Admin Form Card ─────────────────────────────────────────────────────── */
+.al-nav-icon {
+  font-size: 16px;
+  width: 22px;
+  text-align: center;
+  flex-shrink: 0;
+}
 
-.admin-form-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
+.al-logout {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 14px;
   border-radius: 14px;
-  padding: 24px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s;
+  margin-top: 8px;
+}
+
+.al-logout:hover {
+  background: rgba(217,106,106,0.08);
+  color: var(--danger);
+}
+
+/* ── Main area ───────────────────────────────────── */
+
+.al-main {
+  padding: 36px 40px;
+  max-width: 1100px;
+}
+
+.al-page-head {
+  margin-bottom: 28px;
+}
+
+.al-page-eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--primary-dark);
+  margin-bottom: 6px;
+}
+
+.al-page-title {
+  font-size: 36px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.08;
+  margin: 0;
+  color: var(--text);
+}
+
+/* ═══════════════════════════════════════════════════
+   KPI Grid
+═══════════════════════════════════════════════════ */
+
+.ad-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+  gap: 14px;
+  margin-bottom: 32px;
+}
+
+.ad-kpi-card {
+  background: rgba(255,252,248,0.82);
+  backdrop-filter: blur(18px);
+  border: 1px solid rgba(255,255,255,0.6);
+  border-radius: 20px;
+  padding: 20px 18px 18px;
+  box-shadow: 0 8px 24px rgba(79,101,146,0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.ad-kpi-card:hover {
+  box-shadow: 0 14px 32px rgba(79,101,146,0.13);
+  transform: translateY(-2px);
+}
+
+.ad-kpi-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+}
+
+.ad-kpi-value {
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: var(--text);
+}
+
+.ad-kpi-label {
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+/* ═══════════════════════════════════════════════════
+   Section
+═══════════════════════════════════════════════════ */
+
+.ad-section {
+  background: rgba(255,252,248,0.72);
+  backdrop-filter: blur(18px);
+  border: 1px solid rgba(255,255,255,0.55);
+  border-radius: 28px;
+  padding: 26px;
+  box-shadow: 0 10px 30px rgba(79,101,146,0.08);
   margin-bottom: 22px;
 }
 
-.admin-form-card h3 {
-  font-size: 16px;
-  font-weight: 600;
-  margin: 0 0 18px;
+.ad-section-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.ad-section-eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--primary-dark);
+  margin-bottom: 4px;
+}
+
+.ad-section-title {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  margin: 0;
   color: var(--text);
 }
 
-.admin-block-card {
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 16px;
-  margin-bottom: 12px;
+/* ═══════════════════════════════════════════════════
+   Course list rows
+═══════════════════════════════════════════════════ */
+
+.ad-course-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-.admin-blocks-section {
-  margin-top: 18px;
+.ad-course-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 18px 20px;
+  border-radius: 18px;
+  background: rgba(255,255,255,0.74);
+  border: 1px solid rgba(221,229,241,0.88);
+  transition: box-shadow 0.18s;
 }
 
-.admin-textarea {
+.ad-course-row:hover {
+  box-shadow: 0 8px 22px rgba(79,101,146,0.09);
+}
+
+.ad-course-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ad-course-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.ad-course-desc {
+  font-size: 13px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 480px;
+}
+
+.ad-course-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+/* ═══════════════════════════════════════════════════
+   Badges
+═══════════════════════════════════════════════════ */
+
+.ad-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 11px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.ad-badge--green  { background: rgba(130,185,154,0.16); color: #3d7a5a; }
+.ad-badge--orange { background: rgba(239,179,111,0.18); color: #9a6020; }
+.ad-badge--blue   { background: rgba(122,143,232,0.14); color: var(--primary-dark); }
+.ad-badge--gray   { background: rgba(114,128,154,0.12); color: var(--muted); }
+
+/* ═══════════════════════════════════════════════════
+   Toolbar & Forms
+═══════════════════════════════════════════════════ */
+
+.ad-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.ad-form-card {
+  background: rgba(255,252,248,0.88);
+  border: 1px solid rgba(221,229,241,0.88);
+  border-radius: 20px;
+  padding: 24px;
+  margin-bottom: 20px;
+  box-shadow: 0 6px 20px rgba(79,101,146,0.07);
+}
+
+.ad-form-card h3 {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0 0 18px;
+}
+
+.ad-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.ad-label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.ad-textarea {
   width: 100%;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 10px 12px;
+  background: rgba(255,255,255,0.94);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px 14px;
   font-size: 14px;
   color: var(--text);
   resize: vertical;
   font-family: inherit;
   box-sizing: border-box;
-  transition: border-color 0.15s;
+  transition: border-color 0.2s;
 }
 
-.admin-textarea:focus {
+.ad-textarea:focus {
   outline: none;
-  border-color: var(--accent);
+  border-color: rgba(122,143,232,0.7);
+  box-shadow: 0 0 0 4px rgba(122,143,232,0.12);
 }
 
-.admin-select {
-  width: 100%;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 10px 12px;
-  font-size: 14px;
-  color: var(--text);
+.ad-btn-danger {
+  padding: 8px 14px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  background: rgba(217,106,106,0.10);
+  color: var(--danger);
+  border: 1px solid rgba(217,106,106,0.18);
   cursor: pointer;
-  box-sizing: border-box;
+  transition: background 0.18s;
 }
 
-.admin-select:focus {
-  outline: none;
-  border-color: var(--accent);
+.ad-btn-danger:hover {
+  background: rgba(217,106,106,0.18);
 }
 
-/* ─── Analytics panel ───────────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════
+   Users table
+═══════════════════════════════════════════════════ */
 
-.admin-analytics-panel {
-  padding-top: 6px;
+.ad-users-table {
+  background: rgba(255,252,248,0.82);
+  border: 1px solid rgba(255,255,255,0.6);
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 8px 28px rgba(79,101,146,0.08);
 }
 
-/* ─── Danger color ─────────────────────────────────────────────────────────── */
+.ad-users-head {
+  display: grid;
+  grid-template-columns: 1.4fr 1.6fr 0.8fr 0.8fr;
+  padding: 14px 20px;
+  background: rgba(122,143,232,0.07);
+  border-bottom: 1px solid rgba(221,229,241,0.7);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+.ad-users-row {
+  display: grid;
+  grid-template-columns: 1.4fr 1.6fr 0.8fr 0.8fr;
+  align-items: center;
+  padding: 14px 20px;
+  border-bottom: 1px solid rgba(221,229,241,0.5);
+  transition: background 0.15s;
+}
+
+.ad-users-row:last-child {
+  border-bottom: none;
+}
+
+.ad-users-row:hover {
+  background: rgba(122,143,232,0.04);
+}
+
+.ad-user-name {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.ad-user-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(122,143,232,0.18), rgba(169,199,245,0.28));
+  color: var(--primary-dark);
+  font-weight: 700;
+  font-size: 14px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.ad-user-email {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* ═══════════════════════════════════════════════════
+   Misc
+═══════════════════════════════════════════════════ */
+
+.ad-empty {
+  padding: 32px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 14px;
+}
 
 :root {
-  --danger: #e05252;
+  --danger: #d96a6a;
   --surface-hover: rgba(255,255,255,0.04);
+}
+
+@media (max-width: 900px) {
+  .al-root {
+    grid-template-columns: 1fr;
+  }
+  .al-sidebar {
+    position: static;
+    height: auto;
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: 14px 16px;
+  }
+  .al-brand { margin-bottom: 0; }
+  .al-nav { flex-direction: row; flex: unset; }
+  .al-main { padding: 20px 16px; }
 }
