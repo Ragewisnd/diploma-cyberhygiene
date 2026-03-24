@@ -1,85 +1,182 @@
-const API_URL = "http://127.0.0.1:8000";
+const BASE_URL = "http://localhost:8000";
 
-export function getToken() {
-  return localStorage.getItem("token");
-}
-
-export function setToken(token) {
-  localStorage.setItem("token", token);
+function getToken() {
+  return localStorage.getItem("access_token");
 }
 
 export function clearToken() {
-  localStorage.removeItem("token");
+  localStorage.removeItem("access_token");
 }
 
-export async function loginRequest(email, password) {
-  const body = new URLSearchParams({
-    username: email,
-    password,
-  });
+async function request(path, options = {}) {
+  const token = getToken();
+  const headers = {
+    "Content-Type": "application/json",
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    ...(options.headers || {}),
+  };
 
-  const response = await fetch(`${API_URL}/auth/login`, {
+  const res = await fetch(`${BASE_URL}${path}`, { ...options, headers });
+
+  if (!res.ok) {
+    let detail = "Ошибка запроса";
+    try {
+      const json = await res.json();
+      detail = json.detail || detail;
+    } catch {}
+    throw new Error(detail);
+  }
+
+  return res.json();
+}
+
+// ─ auth ──────────────────────────────────────────────────────────────
+
+export async function login(email, password) {
+  const body = new URLSearchParams({ username: email, password });
+  const res = await fetch(`${BASE_URL}/auth/login`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body,
   });
-
-  if (!response.ok) {
-    throw new Error("Неверный email или пароль");
+  if (!res.ok) {
+    const json = await res.json().catch(() => ({}));
+    throw new Error(json.detail || "Ошибка входа");
   }
-
-  return response.json();
+  const data = await res.json();
+  localStorage.setItem("access_token", data.access_token);
+  return data;
 }
 
-export async function authFetch(path, options = {}) {
-  const token = getToken();
-
-  const response = await fetch(`${API_URL}${path}`, {
-    ...options,
-    headers: {
-      ...(options.headers || {}),
-      Authorization: `Bearer ${token}`,
-    },
+export async function register(full_name, email, password) {
+  return request("/auth/register", {
+    method: "POST",
+    body: JSON.stringify({ full_name, email, password }),
   });
-
-  if (response.status === 401) {
-    clearToken();
-    throw new Error("Сессия истекла. Выполни вход заново.");
-  }
-
-  if (!response.ok) {
-    const text = await response.text();
-    throw new Error(text || "Ошибка запроса");
-  }
-
-  return response.json();
 }
+
+// ─ user ─────────────────────────────────────────────────────────────
 
 export async function getCurrentUser() {
-  return authFetch("/users/me");
+  return request("/users/me");
 }
 
 export async function getDashboardMe() {
-  return authFetch("/dashboard/me");
+  return request("/dashboard/me");
 }
 
 export async function getCourseDashboard(courseId) {
-  return authFetch(`/dashboard/course/${courseId}`);
+  return request(`/dashboard/course/${courseId}`);
 }
 
-export async function completeModule(courseId, moduleType, moduleTitle, order) {
-  return authFetch("/progress/complete", {
+// ─ content ──────────────────────────────────────────────────────────
+
+export async function getModule(moduleId) {
+  return request(`/modules/${moduleId}`);
+}
+
+export async function getModulesByCourse(courseId) {
+  return request(`/modules/course/${courseId}`);
+}
+
+export async function getTestByCourse(courseId) {
+  const tests = await request(`/tests/course/${courseId}`);
+  return tests[0] || null;
+}
+
+export async function getTestById(testId) {
+  return request(`/tests/${testId}`);
+}
+
+export async function submitTest(testId, answers) {
+  return request(`/tests/${testId}/submit`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      course_id: courseId,
-      module_type: moduleType,
-      module_title: moduleTitle,
-      order,
-    }),
+    body: JSON.stringify({ answers }),
   });
+}
+
+export async function getMyAttempts() {
+  return request("/tests/attempts/me");
+}
+
+// ─ progress ──────────────────────────────────────────────────────────
+
+export async function completeModule(courseId, moduleType, moduleTitle, order) {
+  return request("/progress/complete", {
+    method: "POST",
+    body: JSON.stringify({ course_id: courseId, module_type: moduleType, module_title: moduleTitle, order }),
+  });
+}
+
+// ─ admin ────────────────────────────────────────────────────────────
+
+export async function adminGetCourses() {
+  return request("/admin/courses");
+}
+
+export async function adminCreateCourse(data) {
+  return request("/admin/courses", { method: "POST", body: JSON.stringify(data) });
+}
+
+export async function adminUpdateCourse(courseId, data) {
+  return request(`/admin/courses/${courseId}`, { method: "PUT", body: JSON.stringify(data) });
+}
+
+export async function adminDeleteCourse(courseId) {
+  return request(`/admin/courses/${courseId}`, { method: "DELETE" });
+}
+
+export async function adminGetModules(courseId) {
+  return request(`/admin/courses/${courseId}/modules`);
+}
+
+export async function adminCreateModule(data) {
+  return request("/admin/modules", { method: "POST", body: JSON.stringify(data) });
+}
+
+export async function adminUpdateModule(moduleId, data) {
+  return request(`/admin/modules/${moduleId}`, { method: "PUT", body: JSON.stringify(data) });
+}
+
+export async function adminDeleteModule(moduleId) {
+  return request(`/admin/modules/${moduleId}`, { method: "DELETE" });
+}
+
+export async function adminGetTests(courseId) {
+  return request(`/admin/courses/${courseId}/tests`);
+}
+
+export async function adminCreateTest(data) {
+  return request("/admin/tests", { method: "POST", body: JSON.stringify(data) });
+}
+
+export async function adminUpdateTest(testId, data) {
+  return request(`/admin/tests/${testId}`, { method: "PUT", body: JSON.stringify(data) });
+}
+
+export async function adminDeleteTest(testId) {
+  return request(`/admin/tests/${testId}`, { method: "DELETE" });
+}
+
+export async function adminGetUsers() {
+  return request("/admin/users");
+}
+
+export async function adminUpdateUser(userId, data) {
+  return request(`/admin/users/${userId}`, { method: "PUT", body: JSON.stringify(data) });
+}
+
+export async function adminEnrollUser(userId, courseId) {
+  return request(`/admin/users/${userId}/enroll`, {
+    method: "POST",
+    body: JSON.stringify({ course_id: courseId }),
+  });
+}
+
+export async function adminGetReportsOverview() {
+  return request("/admin/reports/overview");
+}
+
+export async function adminGetReportsCourse(courseId) {
+  return request(`/admin/reports/course/${courseId}`);
 }
