@@ -29,12 +29,14 @@ export default function AdminUsersPage() {
         {users.map((u) => (
           <div className="ad-users-row" key={u._id}>
             <div className="ad-user-name">
-              <div className="ad-user-avatar">{u.full_name?.[0]?.toUpperCase() || "?"}</div>
+              <div className="ad-user-avatar">
+                {u.full_name?.[0]?.toUpperCase() || "?"}
+              </div>
               <span>{u.full_name}</span>
             </div>
             <span className="ad-user-email">{u.email}</span>
             <span className={`ad-badge ${u.role === "admin" ? "ad-badge--blue" : "ad-badge--gray"}`}>
-              {u.role}
+              {u.role === "admin" ? "Admin" : "User"}
             </span>
             <button
               className="ghost-btn"
@@ -45,7 +47,7 @@ export default function AdminUsersPage() {
             </button>
           </div>
         ))}
-        {users.length === 0 && <div className="ad-empty">Пользователей нет</div>}
+        {users.length === 0 && <div className="ad-empty">👥 Пользователей нет</div>}
       </div>
     </AdminLayout>
   );

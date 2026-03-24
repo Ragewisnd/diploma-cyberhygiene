@@ -3,9 +3,9 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { removeToken } from "../api";
 
 const NAV = [
-  { to: "/admin", label: "Обзор", icon: "⬡" },
-  { to: "/admin/courses", label: "Курсы", icon: "◈" },
-  { to: "/admin/users", label: "Пользователи", icon: "◎" },
+  { to: "/admin",         label: "Обзор",         emoji: "📈" },
+  { to: "/admin/courses", label: "Курсы",         emoji: "📚" },
+  { to: "/admin/users",   label: "Пользователи",  emoji: "👥" },
 ];
 
 export default function AdminLayout({ children, title, subtitle }) {
@@ -19,13 +19,12 @@ export default function AdminLayout({ children, title, subtitle }) {
 
   return (
     <div className="al-root">
-      {/* sidebar */}
       <aside className="al-sidebar">
         <div className="al-brand">
-          <div className="al-brand-icon">⬡</div>
+          <div className="al-brand-icon">C</div>
           <div>
             <div className="al-brand-name">CyberHygiene</div>
-            <div className="al-brand-role">Admin panel</div>
+            <div className="al-brand-sub">Admin panel</div>
           </div>
         </div>
 
@@ -34,27 +33,24 @@ export default function AdminLayout({ children, title, subtitle }) {
             <Link
               key={n.to}
               to={n.to}
-              className={`al-nav-item${
-                pathname === n.to ? " al-nav-item--active" : ""
-              }`}
+              className={`al-nav-item${pathname === n.to ? " al-nav-item--active" : ""}`}
             >
-              <span className="al-nav-icon">{n.icon}</span>
+              <span className="al-nav-emoji">{n.emoji}</span>
               {n.label}
             </Link>
           ))}
         </nav>
 
         <button className="al-logout" onClick={handleLogout}>
-          <span>↩</span> Выйти
+          🚪 Выйти
         </button>
       </aside>
 
-      {/* main */}
       <main className="al-main">
         <motion.div
-          initial={{ opacity: 0, y: 14 }}
+          initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.28 }}
+          transition={{ duration: 0.25 }}
         >
           {(title || subtitle) && (
             <div className="al-page-head">
